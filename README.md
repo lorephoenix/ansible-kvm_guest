@@ -71,7 +71,7 @@ This is an example playbook:
       roles:
         - role: kvm_guest
           # 'profile_<name>' is defined under defaults variable of ansible role
-          # kvm.host.
+          # kvm_host.
           libvirt_profile: "{{ profile_full }}"
           kvm_guests: "{{ guests }}"
 

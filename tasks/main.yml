@@ -1,6 +1,7 @@
 ---
 - local_action: stat path={{ role_path }}/vars/vault.yml
   register: vault
+  tags: [ 'control' ]
 
 - name: Load 'vault' variables
   include_vars: vault.yml
@@ -32,12 +33,17 @@
     - "{{ kvm_guests }}"
   tags: [ 'installation' , 'unattended' , 'kickstart' , 'virt-install' , 'KVM guest' ]
 
-#- name: Uninstall process ...
-#  include_tasks: uninstall.yml
-#  when: item.name is defined and item.state == 'absent' and item.name in virt_vms.list_vms 
-#  with_items:
-#    - "{{ kvm_vms }}"
-#  tags: [ 'deinstallation' , 'KVM guest' ]
+- name: Uninstall process ...
+  include_tasks: uninstall.yml
+  when: ( 
+          ( item.name is defined ) and
+          ( item.state == 'absent' ) and
+          ( item.name in virt_vms.list_vms ) and
+          ( vault.stat.exists == true )
+        )
+  with_items:
+    - "{{ kvm_vms }}"
+  tags: [ 'deinstallation' , 'KVM guest' ]
 
 - name: Start VM {{ item.name }}
   virt:
