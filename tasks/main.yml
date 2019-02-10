@@ -42,7 +42,7 @@
           ( vault.stat.exists == true )
         )
   with_items:
-    - "{{ kvm_vms }}"
+    - "{{ kvm_guests }}"
   tags: [ 'deinstallation' , 'KVM guest' ]
 
 - name: Start VM {{ item.name }}
