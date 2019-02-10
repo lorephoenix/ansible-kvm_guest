@@ -1,0 +1,38 @@
+#!/bin/bash
+{% set ds = [2000] %}  {# Reserve minimum disk space with 2000 MB #}
+{% for lv in item.lv_partitions %} {# Loop through each logvol partition #}
+    {% if ds.append(ds.pop() + lv.size) %}{% endif %} {# Workaround to count each logvol size #}
+{% endfor %}
+{% if item.pv_partitions is defined %}
+{% for pv in item.pv_partitions %} {# Loop through each physical volume partition #}
+    {% if ds.append(ds.pop() + pv.size) %}{% endif %} {# Workaround to count each physical volume size #}
+{% endfor %}
+{% else %}
+    {% if ds.append(ds.pop() + 512) %}{% endif %} {# Workaround to count default boot size if not set #}
+{% endif %}
+
+/usr/bin/virt-install \
+    --accelerate \
+{% if item.autostart is defined %}{% if item.autostart|lower == 'enabled' %}
+    --autostart \
+{% endif %}{% endif %}
+    --check-cpu \
+    --connect {% if libvirt_profile.libvirt_default_uri is defined %}{{ libvirt_profile.libvirt_default_uri }}{% else %}qemu:///system {% endif %} \
+    --hvm \
+    --graphics none \
+    --name {{ item.name }} \
+    --memory {{ item.memory }} \
+    --vcpus {{  item.vpcu }} \
+    --arch {{  item.os.arch }} \
+    --os-type {{ item.os.ostype }} \
+    --os-variant {{ item.os.osvariant }} \
+{% for interface in item.interfaces %}
+    --network bridge={{ interface.bridge }},model=virtio \
+{% endfor %}
+    --console pty,target_type=serial \
+    --disk bus=virtio,format=qcow2,pool={{ pool_name }},size={{ (ds[-1] / 1000 ) |int }},sparse=false \
+{% if item.image is undefined %}
+    --location '{{ item.os.repo_base_url }}' \
+    --initrd-inject="{{ ksroot }}/{{ item.name }}-ks.ks" \
+    --extra-args 'console=ttyS0,115200n8 serial ks=file:/{{ item.name }}-ks.ks'
+{% endif %}

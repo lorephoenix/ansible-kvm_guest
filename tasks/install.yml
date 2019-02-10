@@ -1,0 +1,43 @@
+---
+- name: Load 'kickstart' variable file
+  include_vars: kickstart.yml
+  tags: [ 'kickstart' , 'unattended' ]
+
+- name: Ensure ks-root
+  file:
+    path: '{{ ksroot }}'
+    state: directory
+    owner: '{{ libvirt_owner }}'
+    group: '{{ libvirt_group }}'
+    mode: 0774
+  tags: [ 'kickstart', 'default directory' ]
+
+- name: Create kickstart file for KVM guest '{{ item.name }}'
+  template:
+    src: "{{ item.os.kickstart }}.j2"
+    dest: "{{ ksroot }}/{{ item.name }}-ks.ks"
+    owner: '{{ libvirt_owner }}'
+    group: '{{ libvirt_group }}'
+    mode: 0774
+  tags: [ 'kickstart' ]
+
+- virt_pool:
+    command: facts
+
+# After collecting virt_pool facts we capture the storage pool 
+# with the most available disk space using a filter_plugin.
+- set_fact:
+    pool_name: '{{ ansible_libvirt_pools | sortbysubkey("size_available") }}'
+
+- name: Create virt-install script for KVM '{{ item.name }}'
+  template:
+    src: "virt-install.sh.j2"
+    dest: "{{ ksroot }}/{{ item.name }}-install.sh"
+    owner: '{{ libvirt_owner }}'
+    group: '{{ libvirt_group }}'
+    mode: 0774
+  tags: [ 'virt-install' , 'script' ]
+
+- name: Start installation of KVM guest '{{ item.name }}'
+  shell: "/{{ ksroot }}/{{ item.name }}-install.sh >> {{ ksroot }}/{{ item.name }}-install.log"
+  tags: [ 'installation' , 'KVM guest' ]

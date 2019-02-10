@@ -1,0 +1,37 @@
+---
+#--- parameters required to generate a kickstart template file ---
+ks_keyboard: be-latin1
+ks_lang: en_US.UTF-8
+ks_timezone: Europe/Brussels
+ks_firewall: enabled
+ks_selinux_state: enforcing
+ks_services:
+    - NetworkManager
+    - sshd
+ks_nameservers:
+    - 8.8.8.8
+    - 8.8.4.4
+ks_default_packages:
+  - qemu-guest-agent
+  - setroubleshoot-server
+  - sshd
+  - system-config-firewall-base
+  - yum-utils
+ks_repo_packages:
+  - name: epel-release
+    repofile: epel.repo
+    priority: 5
+  - name: centos-release-scl
+    repofile: CentOS-SCLo-scl.repo
+    priority: 10
+  - name: centos-release-scl-rh
+    repofile: CentOS-SCLo-scl-rh.repo
+    priority: 10
+ks_sudo_groups:
+  - name: wheel
+    nopasswd: false
+  - name: deployer
+    nopasswd: true
+ks_yum_plugin_priority: enabled
+ks_audit_max_log_file: 8
+ks_default_syslog: rsyslog

@@ -1,0 +1,11 @@
+---
+
+# Ansible Requirements File
+# https://docs.ansible.com/ansible/galaxy.html#advanced-control-over-role-requirements-files
+#
+# Install via: ansible-galaxy install -r requirements.yml
+
+# included in kvm_host.yml
+- src: https://github.com/lorephoenix/ansible-kvm_host
+  version: master
+  name: kvm_host

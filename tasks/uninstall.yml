@@ -1,0 +1,36 @@
+---
+- name: Get VM status on {{ item.name }}
+  virt:
+    command: status
+    name: "{{ item.name }}"
+  register: virt_vm
+  tags: [ 'register' , 'status' , 'KVM guest' ]
+
+- debug:
+     msg: "{{ item.name }} = {{ virt_vm.status }}"
+     verbosity: 0
+
+- name: Shutdown VM {{ item.name }}
+  virt:
+    name: "{{ item.name }}"
+    state: shutdown
+  when: virt_vm.status is defined and virt_vm.status == 'running'
+  tags: [ 'virsh' , 'shutdown' , 'KVM guest' ]
+
+- name: Get source location
+  shell: "virsh dumpxml --domain {{ item.name }} | /usr/bin/grep 'source file' | awk -F\"'\" '{print $2}' "
+  register: sourcefile
+  tags: [ 'register' , 'image' , 'KVM guest' ]
+
+- name: Undefine VM {{ item.name }}
+  virt:
+    name: "{{ item.name }}"
+    command: undefine
+  tags: [ 'virsh' , 'undefine' , 'KVM guest' ]
+
+- name: Remove source file of VM {{ item.name }}
+  file:
+    path: "{{ sourcefile.stdout }}"
+    state: absent
+  when: sourcefile is defined
+  tags: [ 'cleanup' , 'image' ]

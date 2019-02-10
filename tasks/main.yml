@@ -1,0 +1,55 @@
+---
+- local_action: stat path={{ role_path }}/vars/vault.yml
+  register: vault
+
+- name: Load 'vault' variables
+  include_vars: vault.yml
+  when: vault.stat.exists == true
+  tags: [ 'vault' , 'credentials' ]
+
+- name: Get list of current virtual machines
+  virt: 
+    command: list_vms
+  register: virt_vms
+  when: vault.stat.exists == true
+  tags: [ 'libvirt' , 'kvm guests', 'virt::list_vms' ]
+
+- name: Debug list of current virtual machines
+  debug:
+    msg: '{{ virt_vms }}'
+    verbosity: 1
+  when: vault.stat.exists == true
+
+- name: Start unattended installation ...
+  include_tasks: install.yml
+  when: (
+          ( item.name is defined ) and 
+          ( item.state == 'present' ) and
+          ( item.name not in virt_vms.list_vms ) and
+          ( vault.stat.exists == true )
+        )
+  with_items: 
+    - "{{ kvm_guests }}"
+  tags: [ 'installation' , 'unattended' , 'kickstart' , 'virt-install' , 'KVM guest' ]
+
+#- name: Uninstall process ...
+#  include_tasks: uninstall.yml
+#  when: item.name is defined and item.state == 'absent' and item.name in virt_vms.list_vms 
+#  with_items:
+#    - "{{ kvm_vms }}"
+#  tags: [ 'deinstallation' , 'KVM guest' ]
+
+- name: Start VM {{ item.name }}
+  virt:
+    name: "{{ item.name }}"
+    state: running
+  when: ( 
+          ( item.name is defined ) and
+          ( item.state == 'present' ) and
+          ( item.autostart == 'enabled' ) and
+          ( item.name in virt_vms.list_vms ) and
+          ( vault.stat.exists == true )
+        )        
+  with_items:
+    - "{{ kvm_guests }}"
+  
