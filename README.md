@@ -105,7 +105,7 @@ This is an example playbook:
               fstype: xfs
               mount_point: /
               name: lv_root
-              size: 8000
+              size: 2000
             - label: TMP
               fstype: tmpfs
               mount_point: /tmp
