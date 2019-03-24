@@ -54,6 +54,25 @@ The following variables are optional and preferable kept on the vault file '*var
         subnet_mask:        <subnet mask>
 
 
+2. defaults/main.yml
+    
+    # Default location to store created kickstart file(s) and installation script(s).
+    ksroot: '$HOME/ks'
+
+    kvm_guest_repo_server: 'http://ftp.belnet.be/mirror/ftp.centos.org/'
+    kvm_guest_centos7_url: '{{ kvm_guest_repo_server }}/7/os/x86_64'
+
+    kvm_guest_centos7:
+        name: centos7
+        arch: x86_64
+        ostype: linux
+        osvariant: rhel7.6
+        repo_base_url: '{{ kvm_guest_centos7_url }}'
+        url: '{{ kvm_guest_centos7_url }}'
+        kickstart: centos7vm.ks
+
+
+
 Dependencies
 ------------
 
