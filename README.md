@@ -55,9 +55,9 @@ The following variables are optional and preferable kept on the vault file '*var
 
 
 2. defaults/main.yml
+   
+Default location to store created kickstart file(s) and installation script(s).
 
-    
-    Default location to store created kickstart file(s) and installation script(s).
     ksroot: '$HOME/ks'
     
     kvm_guest_repo_server: 'http://ftp.belnet.be/mirror/ftp.centos.org/'
