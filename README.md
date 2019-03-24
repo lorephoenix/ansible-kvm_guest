@@ -73,6 +73,43 @@ Default lower priority variables for this role.
         url: '{{ kvm_guest_centos7_url }}'
         kickstart: centos7vm.ks
 
+3. vars/kickstart.yml
+
+Kickstart variables associated with this role.
+
+    #--- parameters required to generate a kickstart template file ---
+    ks_keyboard:        <keyboard layout>
+    ks_lang:            <set default language>
+    ks_timezone:        <sets the system time zone>
+    ks_firewall:        <[ enabled|disabled ]>
+    ks_selinux_state:   <[ enforcing|permissive|disabled ]>
+
+    # Items under ks_services will hook the specified unit into relevant places,
+    # so that it will automatically start on boot, or when relevant hardware is 
+    # plugged in or other situations depending on what's specified in the unit
+    # file.
+    ks_services:
+        - <name of unit>
+
+    ks_nameservers:
+        - <set DNS name server, as an IP Address>
+
+    # Install additional packages
+    ks_default_packages:
+      - <name of package>
+
+    ks_repo_packages:
+      - name:           <repository name>
+        repofile:       <repository file>
+        priority:       <priority level>
+
+    ks_sudo_groups:
+      - name:           <group name>
+        nopasswd:       <[ false|true ]>
+
+    ks_yum_plugin_priority: <[ enabled|disabled ]>
+    ks_audit_max_log_file:  <maximum number of log files>
+    ks_default_syslog:      <[ rsyslog|syslog-ng ]>
 
 
 Dependencies
