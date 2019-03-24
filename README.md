@@ -32,6 +32,9 @@ A kickstart file requires to have a root password which I recommend to be define
 
 The following variables are optional and preferable kept on the vault file '*vars/secret.yml*':
 
+    # When you want to protect your GRUB with a password then set the following line:
+    vault_boot_password:    <plaintext password>
+
     # Local users that needs to be created on our KVM guests.
     vault_local_users:
       - username:           <name of user>
