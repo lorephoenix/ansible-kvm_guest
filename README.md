@@ -24,13 +24,13 @@ Role Variables
 
 #### Other variables for the role
 
-1. vars/secret.yml
+1. vars/vault.yml
 
-A kickstart file requires to have a root password which I recommend to be defined on the vault file '*vars/secret.yml*':
+A kickstart file requires to have a root password which I recommend to be defined on the vault file '*vars/vault.yml*':
 
     vault_root_password:    <plaintext password>
 
-The following variables are optional and preferable kept on the vault file '*vars/secret.yml*':
+The following variables are optional and preferable kept on the vault file '*vars/vault.yml*':
 
     # When you want to protect your GRUB with a password then set the following line:
     vault_boot_password:    <plaintext password>
