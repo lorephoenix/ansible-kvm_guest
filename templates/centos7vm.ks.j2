@@ -2841,7 +2841,6 @@ fi
 {% endif %}
 
 #---- Adjust sudoers ----
-/usr/bin/sed -i 's/^#includedir/includedir/' /etc/sudoers
 /usr/bin/sed -i 's/^%wheel/# %wheel/' /etc/sudoers
 /usr/bin/sed -i 's/^%sudo/# %sudo/' /etc/sudoers
 {% if ks_sudo_groups is defined %}
