@@ -2847,8 +2847,7 @@ fi
 {% for group in ks_sudo_groups %}
 {% if group.name is defined %}
 cat << EOF >> /etc/sudoers.d/{{ group.name }}
-%{{ group.name }}   ALL=(ALL)   {% if group.nopasswd is defined and group.nopasswd == 'true' %} NOPASSWD: ALL {% else %} ALL 
-{% endif %}
+%{{ group.name }}   ALL=(ALL)   {{ 'NOPASSWD: ALL' if (group.nopasswd is defined and (group.nopasswd|bool)) else 'ALL' }}
 EOF
 {% endif %}
 {% endfor %}
